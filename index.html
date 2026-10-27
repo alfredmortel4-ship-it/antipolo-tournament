@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Antipolo Tournament – Arm Wrestling</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#faf6f1;--surface:#fff;--text:#1d1a17;--muted:#6b625a;--accent:#c8102e;--accent-text:#fff;--line:#e4dbd1;--gold:#b7791f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15110f;--surface:#211b18;--text:#f4ede6;--muted:#a79b90;--accent:#ef3b4f;--accent-text:#fff;--line:#3a312c;--gold:#f0b44c}}
+:root[data-theme="dark"]{--bg:#15110f;--surface:#211b18;--text:#f4ede6;--muted:#a79b90;--accent:#ef3b4f;--accent-text:#fff;--line:#3a312c;--gold:#f0b44c}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:var(--accent);color:var(--accent-text);padding:28px 20px 24px;text-align:center}
+header h1{margin:0;font-size:clamp(28px,7vw,48px);letter-spacing:.04em;text-transform:uppercase;font-weight:900}
+header p{margin:6px 0 0;opacity:.92}
+main{max-width:760px;margin:0 auto;padding:20px 16px 48px}
+h2{font-size:20px;margin:28px 0 12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px}
+.card h3{margin:0 0 4px;font-size:18px}
+.meta{color:var(--muted);font-size:14px}
+.tag{display:inline-block;background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:2px 10px;font-size:13px;margin:6px 6px 0 0}
+label{display:block;font-weight:600;font-size:14px;margin:12px 0 4px}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font:inherit}
+textarea{min-height:70px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:520px){.row{grid-template-columns:1fr}}
+button,a.btn{display:inline-block;background:var(--accent);color:var(--accent-text);border:0;border-radius:8px;padding:11px 18px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;margin-top:14px}
+button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.note{background:var(--bg);border-left:4px solid var(--gold);padding:10px 12px;border-radius:6px;font-size:14px;margin:12px 0}
+.hidden{display:none}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+.wrap{overflow-x:auto}
+.empty{color:var(--muted);text-align:center;padding:20px}
+</style>
+</head>
+<body>
+<header>
+  <div style="font-size:34px" aria-hidden="true">💪</div>
+  <h1>Antipolo Tournament</h1>
+  <p>Arm wrestling – create a tournament, sign up players</p>
+</header>
+<main>
+  <div id="status" class="note hidden"></div>
+
+  <section id="home">
+    <button id="showCreate">+ Create a tournament</button>
+    <div id="createBox" class="card hidden" style="margin-top:14px">
+      <h3>New tournament</h3>
+      <label for="c-name">Tournament name</label>
+      <input id="c-name" placeholder="e.g. Antipolo Open 2026">
+      <div class="row">
+        <div><label for="c-date">Date</label><input id="c-date" type="date"></div>
+        <div><label for="c-venue">Venue</label><input id="c-venue" placeholder="Antipolo, Rizal"></div>
+      </div>
+      <label for="c-classes">Weight classes (separate each with a comma – add, remove or edit any)</label>
+      <textarea id="c-classes" style="min-height:110px">Under 55 kg, 55–60 kg, 60–65 kg, 65–70 kg, 70–75 kg, 75–80 kg, 80–85 kg, 85–90 kg, 90–100 kg, 100 kg and up</textarea>
+      <label for="c-email">Organizer email (registrations are sent here)</label>
+      <input id="c-email" type="email" placeholder="you@example.com">
+      <label for="c-desc">Details / rules (optional)</label>
+      <textarea id="c-desc"></textarea>
+      <button id="createBtn">Create tournament</button>
+      <button class="ghost" id="cancelCreate">Cancel</button>
+      <div id="c-err" class="meta" style="color:var(--accent)"></div>
+    </div>
+    <h2>Tournaments</h2>
+    <div id="list"></div>
+  </section>
+
+  <section id="detail" class="hidden">
+    <button class="ghost" id="back" style="margin-top:0">← All tournaments</button>
+    <div id="tInfo" class="card" style="margin-top:14px"></div>
+
+    <div class="card">
+      <h3>Register as a player</h3>
+      <label for="r-name">Full name</label><input id="r-name">
+      <div class="row">
+        <div><label for="r-age">Age</label><input id="r-age" type="number" min="12" max="99"></div>
+        <div><label for="r-weight">Weight (kg)</label><input id="r-weight" type="number" min="30" max="250"></div>
+      </div>
+      <div class="row">
+        <div><label for="r-class">Weight class</label><select id="r-class"></select></div>
+        <div><label for="r-arm">Arm</label>
+          <select id="r-arm"><option>Right</option><option>Left</option><option>Both</option></select></div>
+      </div>
+      <label for="r-contact">Your email or phone</label><input id="r-contact">
+      <button id="regBtn">Register</button>
+      <div id="r-err" class="meta" style="color:var(--accent)"></div>
+      <div id="r-done" class="hidden note"></div>
+    </div>
+
+    <h2>Registered players <span id="pCount" class="meta"></span></h2>
+    <div class="card wrap" id="players"></div>
+  </section>
+</main>
+
+<script>
+(function(){
+  var esc=function(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
+  var $=function(id){return document.getElementById(id)};
+  var db=null, tournaments=[], current=null, unsubPlayers=null, local=true;
+  var LS="antipolo-tournaments";
+
+  // ---- storage: shared db when available, localStorage fallback ----
+  function lsRead(){try{return JSON.parse(localStorage.getItem(LS)||"[]")}catch(e){return []}}
+  function lsWrite(){try{localStorage.setItem(LS,JSON.stringify(tournaments))}catch(e){}}
+
+  function showStatus(msg){var s=$("status");s.textContent=msg;s.classList.remove("hidden")}
+
+  function renderList(){
+    var box=$("list");
+    if(!tournaments.length){box.innerHTML='<div class="card empty">No tournaments yet. Create the first one!</div>';return}
+    box.innerHTML="";
+    tournaments.slice().sort(function(a,b){return (a.date||"9")>(b.date||"9")?1:-1}).forEach(function(t){
+      var d=document.createElement("div");d.className="card";
+      d.innerHTML='<h3>'+esc(t.name)+'</h3><div class="meta">'+esc(t.date||"Date TBA")+' · '+esc(t.venue||"Venue TBA")+'</div>'+
+        '<button data-id="'+esc(t.id)+'">View &amp; register</button>';
+      d.querySelector("button").onclick=function(){openTournament(t.id)};
+      box.appendChild(d);
+    });
+  }
+
+  function openTournament(id){
+    current=tournaments.filter(function(t){return t.id===id})[0];
+    if(!current)return;
+    $("home").classList.add("hidden");$("detail").classList.remove("hidden");
+    $("r-done").classList.add("hidden");$("r-err").textContent="";
+    var classes=(current.classes||"").split(",").map(function(s){return s.trim()}).filter(Boolean);
+    $("r-class").innerHTML=classes.map(function(c){return "<option>"+esc(c)+"</option>"}).join("")||"<option>Open</option>";
+    $("tInfo").innerHTML='<h3>'+esc(current.name)+'</h3><div class="meta">'+esc(current.date||"Date TBA")+' · '+esc(current.venue||"Venue TBA")+'</div>'+
+      (current.desc?'<p>'+esc(current.desc)+'</p>':'')+
+      classes.map(function(c){return '<span class="tag">'+esc(c)+'</span>'}).join("");
+    watchPlayers();
+    window.scrollTo(0,0);
+  }
+
+  function renderPlayers(list){
+    $("pCount").textContent="("+list.length+")";
+    if(!list.length){$("players").innerHTML='<div class="empty">No players yet.</div>';return}
+    $("players").innerHTML='<table><tr><th>Name</th><th>Class</th><th>Arm</th><th>Kg</th></tr>'+
+      list.map(function(p){return "<tr><td>"+esc(p.name)+"</td><td>"+esc(p.cls)+"</td><td>"+esc(p.arm)+"</td><td>"+esc(p.weight)+"</td></tr>"}).join("")+"</table>";
+  }
+
+  function watchPlayers(){
+    if(unsubPlayers){unsubPlayers();unsubPlayers=null}
+    if(!local&&db){
+      try{
+        unsubPlayers=db.collection("tournaments/"+current.id+"/players").onSnapshot(function(snap){
+          var out=[];snap.docs.forEach(function(d){out.push(d.data())});
+          out.sort(function(a,b){return (a.at||0)-(b.at||0)});renderPlayers(out);
+        },function(){renderPlayers([])});
+      }catch(e){renderPlayers([])}
+    } else renderPlayers(current.players||[]);
+  }
+
+  // ---- create ----
+  $("showCreate").onclick=function(){$("createBox").classList.remove("hidden")};
+  $("cancelCreate").onclick=function(){$("createBox").classList.add("hidden")};
+  $("createBtn").onclick=function(){
+    var t={name:$("c-name").value.trim(),date:$("c-date").value,venue:$("c-venue").value.trim(),
+      classes:$("c-classes").value.trim(),email:$("c-email").value.trim(),desc:$("c-desc").value.trim(),created:Date.now()};
+    if(!t.name||!/^\S+@\S+\.\S+$/.test(t.email)){$("c-err").textContent="Please enter a tournament name and a valid organizer email.";return}
+    $("c-err").textContent="";
+    var done=function(){$("createBox").classList.add("hidden");["c-name","c-date","c-venue","c-desc","c-email"].forEach(function(i){$(i).value=""})};
+    if(!local&&db){
+      db.collection("tournaments").add(t).then(done).catch(function(){
+        $("c-err").textContent="Couldn’t save to the shared list (you may need to sign in). Saved on this device instead.";
+        t.id="l"+Date.now();t.players=[];tournaments.push(t);lsWrite();renderList();
+      });
+    } else {t.id="l"+Date.now();t.players=[];tournaments.push(t);lsWrite();renderList();done()}
+  };
+
+  // ---- register + email ----
+  $("regBtn").onclick=function(){
+    var p={name:$("r-name").value.trim(),age:$("r-age").value,weight:$("r-weight").value,cls:$("r-class").value,
+      arm:$("r-arm").value,contact:$("r-contact").value.trim(),at:Date.now()};
+    if(!p.name||!p.weight||!p.contact){$("r-err").textContent="Please fill in your name, weight and contact.";return}
+    $("r-err").textContent="";
+    var save;
+    if(!local&&db&&String(current.id).charAt(0)!=="l"){
+      save=db.collection("tournaments/"+current.id+"/players").add(p);
+    } else {current.players=(current.players||[]);current.players.push(p);lsWrite();renderPlayers(current.players);save=Promise.resolve()}
+    save.catch(function(){}).then(function(){
+      var subject="Registration: "+p.name+" – "+current.name;
+      var body="New player registration for "+current.name+"\n\nName: "+p.name+"\nAge: "+p.age+"\nWeight: "+p.weight+" kg\nWeight class: "+p.cls+
+        "\nArm: "+p.arm+"\nContact: "+p.contact+"\n\nSent from the Antipolo Tournament site.";
+      var href="mailto:"+encodeURIComponent(current.email)+"?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body);
+      var gmail="https://mail.google.com/mail/?view=cm&fs=1&to="+encodeURIComponent(current.email)+"&su="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body);
+      var box=$("r-done");
+      box.innerHTML='<strong>You’re registered, '+esc(p.name)+'!</strong><br>One last step: send your details to the organizer by email.<br>'+
+        '<a class="btn" target="_blank" rel="noopener" href="'+esc(gmail)+'">✉ Send with Gmail</a> '+
+        '<a class="btn" style="background:transparent;color:var(--text);border:1px solid var(--line)" target="_top" href="'+href+'">Use another email app</a>';
+      box.classList.remove("hidden");
+      ["r-name","r-age","r-weight","r-contact"].forEach(function(i){$(i).value=""});
+    });
+  };
+
+  $("back").onclick=function(){
+    if(unsubPlayers){unsubPlayers();unsubPlayers=null}
+    $("detail").classList.add("hidden");$("home").classList.remove("hidden");
+  };
+
+  // ---- boot ----
+  tournaments=lsRead();renderList();
+  if(window.claude&&claude.use){
+    claude.use("db").then(function(d){
+      if(!d){showStatus("Offline mode: tournaments are saved on this device only.");return}
+      db=d;local=false;
+      d.collection("tournaments").onSnapshot(function(snap){
+        var out=[];snap.docs.forEach(function(x){var v=x.data();v.id=x.id;out.push(v)});
+        tournaments=out;renderList();
+      },function(){local=true;showStatus("Couldn’t reach the shared list. Using this device only.")});
+    }).catch(function(){showStatus("Offline mode: tournaments are saved on this device only.")});
+  } else showStatus("Offline mode: tournaments are saved on this device only.");
+})();
+</script>
+</body>
+</html>
